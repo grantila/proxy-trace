@@ -1,3 +1,7 @@
+[![npm version][npm-image]][npm-url]
+[![build status][travis-image]][travis-url]
+[![coverage status][coverage-image]][coverage-url]
+
 # proxy-trace
 
 This package acts as a frontend to [`proxy-addr`](https://www.npmjs.com/package/proxy-addr). It can be used with custom remote address and header objects, or with Node.js' `req` (for HTTP/1) and the HTTP/2 `stream`.
@@ -79,3 +83,11 @@ const {
     peer, // string (or null)
 } = tracer( stream, headers );
 ```
+
+
+[npm-image]: https://img.shields.io/npm/v/proxy-trace.svg
+[npm-url]: https://npmjs.org/package/proxy-trace
+[travis-image]: https://img.shields.io/travis/grantila/proxy-trace.svg
+[travis-url]: https://travis-ci.org/grantila/proxy-trace
+[coverage-image]: https://coveralls.io/repos/github/grantila/proxy-trace/badge.svg?branch=master
+[coverage-url]: https://coveralls.io/github/grantila/proxy-trace?branch=master
