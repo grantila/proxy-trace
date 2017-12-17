@@ -1,0 +1,45 @@
+{
+  "name": "proxy-trace",
+  "version": "0.0.0",
+  "description": "Typesafe transportation-agnostic proxy parser",
+  "author": "Gustaf Räntilä",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/grantila/proxy-trace/issues"
+  },
+  "homepage": "https://github.com/grantila/proxy-trace#readme",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "./node_modules/.bin/rimraf dist && ./node_modules/.bin/tsc -p .",
+    "test": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha --build --check-leaks -- dist/test",
+    "buildtest": "npm run build && npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grantila/proxy-trace.git"
+  },
+  "keywords": [
+    "address",
+    "proxy",
+    "forwarded",
+    "remote",
+    "ip"
+  ],
+  "devDependencies": {
+    "@types/mocha": "2.x",
+    "@types/node": "8.x",
+    "chai": "4.x",
+    "coveralls": "2.x",
+    "istanbul": "1.1.0-alpha.1",
+    "mocha": "4.x",
+    "rimraf": "2.x",
+    "typescript": "2.6.x"
+  },
+  "optionalDependencies": {
+    "@types/node": "8.x"
+  },
+  "dependencies": {
+    "proxy-addr": "2.x"
+  }
+}
