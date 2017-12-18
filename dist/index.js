@@ -34,7 +34,7 @@ function parseAddresses(addrs) {
     const address = {
         intermediateProxies: []
     };
-    const peer = addrs.shift();
+    const peer = addrs.pop();
     const proxy = addrs.length ? addrs.shift() : null;
     const intermediateProxies = addrs;
     return { peer, proxy, intermediateProxies };

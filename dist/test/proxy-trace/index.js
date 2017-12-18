@@ -4,7 +4,7 @@ require("mocha");
 const chai_1 = require("chai");
 const _1 = require("../../");
 function makeProxyAddr(addrs) {
-    return [...addrs].reverse().join(', ');
+    return addrs.join(', ');
 }
 function makeReq(addr, proxies) {
     return (proxies)
@@ -38,8 +38,8 @@ describe('trace', () => {
         const proxies = ["2.2.2.2"];
         const tracer = _1.trace();
         const res = tracer(peer, makeProxyAddr(proxies));
-        chai_1.expect(res.peer).to.equal(peer);
-        chai_1.expect(res.proxy).to.equal(proxies[0]);
+        chai_1.expect(res.peer).to.equal(proxies[0]);
+        chai_1.expect(res.proxy).to.equal(peer);
         chai_1.expect(res.intermediateProxies).to.be.empty;
     });
     it('should get peer and proxies when two proxies', () => {
@@ -47,8 +47,8 @@ describe('trace', () => {
         const proxies = ["2.2.2.2", "3.3.3.3"];
         const tracer = _1.trace();
         const res = tracer(peer, makeProxyAddr(proxies));
-        chai_1.expect(res.peer).to.equal(peer);
-        chai_1.expect(res.proxy).to.equal(proxies[0]);
+        chai_1.expect(res.peer).to.equal(proxies[0]);
+        chai_1.expect(res.proxy).to.equal(peer);
         chai_1.expect(res.intermediateProxies).to.deep.equal(proxies.slice(1));
     });
     it('should get peer and proxies when three proxies', () => {
@@ -56,18 +56,20 @@ describe('trace', () => {
         const proxies = ["2.2.2.2", "3.3.3.3", "4.4.4.4"];
         const tracer = _1.trace();
         const res = tracer(peer, makeProxyAddr(proxies));
-        chai_1.expect(res.peer).to.equal(peer);
-        chai_1.expect(res.proxy).to.equal(proxies[0]);
-        chai_1.expect(res.intermediateProxies).to.deep.equal(proxies.slice(1));
+        chai_1.expect(res.peer).to.equal(proxies[0]);
+        chai_1.expect(res.proxy).to.equal(peer);
+        chai_1.expect(res.intermediateProxies)
+            .to.deep.equal(proxies.slice(1).reverse());
     });
     it('should handle function-based trust setting', () => {
         const peer = "1.2.3.4";
         const proxies = ["2.2.2.2", "3.3.3.3", "4.4.4.4"];
         const tracer = _1.trace({ trust: () => true });
         const res = tracer(peer, makeProxyAddr(proxies));
-        chai_1.expect(res.peer).to.equal(peer);
-        chai_1.expect(res.proxy).to.equal(proxies[0]);
-        chai_1.expect(res.intermediateProxies).to.deep.equal(proxies.slice(1));
+        chai_1.expect(res.peer).to.equal(proxies[0]);
+        chai_1.expect(res.proxy).to.equal(peer);
+        chai_1.expect(res.intermediateProxies)
+            .to.deep.equal(proxies.slice(1).reverse());
     });
     it('should handle string-array-based trust setting', () => {
         const peer = "1.2.3.4";
@@ -76,19 +78,20 @@ describe('trace', () => {
             trust: ["1.2.3.4", "2.2.2.2/8", "4.4.4.4/8"]
         });
         const res = tracer(peer, makeProxyAddr(proxies));
-        chai_1.expect(res.peer).to.equal(peer);
-        chai_1.expect(res.proxy).to.equal(proxies[0]);
+        chai_1.expect(res.peer).to.equal("3.3.3.3");
+        chai_1.expect(res.proxy).to.equal(peer);
         chai_1.expect(res.intermediateProxies)
-            .to.deep.equal(proxies.slice(1, 2));
+            .to.deep.equal(proxies.slice(2));
     });
     it('should handle IPv6', () => {
         const peer = "[2001:db8:cafe::17]";
         const proxies = ["2.2.2.2", "[2001:db2:cafe::17]", "4.4.4.4"];
         const tracer = _1.trace();
         const res = tracer(peer, makeProxyAddr(proxies));
-        chai_1.expect(res.peer).to.equal(peer);
-        chai_1.expect(res.proxy).to.equal(proxies[0]);
-        chai_1.expect(res.intermediateProxies).to.deep.equal(proxies.slice(1));
+        chai_1.expect(res.peer).to.equal(proxies[0]);
+        chai_1.expect(res.proxy).to.equal(peer);
+        chai_1.expect(res.intermediateProxies)
+            .to.deep.equal(proxies.slice(1).reverse());
     });
 });
 describe('traceReq', () => {
@@ -105,8 +108,8 @@ describe('traceReq', () => {
         const proxies = ["2.2.2.2"];
         const tracer = _1.traceReq();
         const res = tracer(makeReq(peer, makeProxyAddr(proxies)));
-        chai_1.expect(res.peer).to.equal(peer);
-        chai_1.expect(res.proxy).to.equal(proxies[0]);
+        chai_1.expect(res.peer).to.equal(proxies[0]);
+        chai_1.expect(res.proxy).to.equal(peer);
         chai_1.expect(res.intermediateProxies).to.be.empty;
     });
     it('should get peer and proxies when two proxies', () => {
@@ -114,8 +117,8 @@ describe('traceReq', () => {
         const proxies = ["2.2.2.2", "3.3.3.3"];
         const tracer = _1.traceReq();
         const res = tracer(makeReq(peer, makeProxyAddr(proxies)));
-        chai_1.expect(res.peer).to.equal(peer);
-        chai_1.expect(res.proxy).to.equal(proxies[0]);
+        chai_1.expect(res.peer).to.equal(proxies[0]);
+        chai_1.expect(res.proxy).to.equal(peer);
         chai_1.expect(res.intermediateProxies).to.deep.equal(proxies.slice(1));
     });
     it('should get peer and proxies when three proxies', () => {
@@ -123,9 +126,10 @@ describe('traceReq', () => {
         const proxies = ["2.2.2.2", "3.3.3.3", "4.4.4.4"];
         const tracer = _1.traceReq();
         const res = tracer(makeReq(peer, makeProxyAddr(proxies)));
-        chai_1.expect(res.peer).to.equal(peer);
-        chai_1.expect(res.proxy).to.equal(proxies[0]);
-        chai_1.expect(res.intermediateProxies).to.deep.equal(proxies.slice(1));
+        chai_1.expect(res.peer).to.equal(proxies[0]);
+        chai_1.expect(res.proxy).to.equal(peer);
+        chai_1.expect(res.intermediateProxies)
+            .to.deep.equal(proxies.slice(1).reverse());
     });
 });
 describe('traceStream', () => {
@@ -142,8 +146,8 @@ describe('traceStream', () => {
         const proxies = ["2.2.2.2"];
         const tracer = _1.traceStream();
         const res = makeStream(tracer, peer, makeProxyAddr(proxies));
-        chai_1.expect(res.peer).to.equal(peer);
-        chai_1.expect(res.proxy).to.equal(proxies[0]);
+        chai_1.expect(res.peer).to.equal(proxies[0]);
+        chai_1.expect(res.proxy).to.equal(peer);
         chai_1.expect(res.intermediateProxies).to.be.empty;
     });
     it('should get peer and proxies when two proxies', () => {
@@ -151,8 +155,8 @@ describe('traceStream', () => {
         const proxies = ["2.2.2.2", "3.3.3.3"];
         const tracer = _1.traceStream();
         const res = makeStream(tracer, peer, makeProxyAddr(proxies));
-        chai_1.expect(res.peer).to.equal(peer);
-        chai_1.expect(res.proxy).to.equal(proxies[0]);
+        chai_1.expect(res.peer).to.equal(proxies[0]);
+        chai_1.expect(res.proxy).to.equal(peer);
         chai_1.expect(res.intermediateProxies).to.deep.equal(proxies.slice(1));
     });
     it('should get peer and proxies when three proxies', () => {
@@ -160,9 +164,10 @@ describe('traceStream', () => {
         const proxies = ["2.2.2.2", "3.3.3.3", "4.4.4.4"];
         const tracer = _1.traceStream();
         const res = makeStream(tracer, peer, makeProxyAddr(proxies));
-        chai_1.expect(res.peer).to.equal(peer);
-        chai_1.expect(res.proxy).to.equal(proxies[0]);
-        chai_1.expect(res.intermediateProxies).to.deep.equal(proxies.slice(1));
+        chai_1.expect(res.peer).to.equal(proxies[0]);
+        chai_1.expect(res.proxy).to.equal(peer);
+        chai_1.expect(res.intermediateProxies)
+            .to.deep.equal(proxies.slice(1).reverse());
     });
 });
 //# sourceMappingURL=index.js.map

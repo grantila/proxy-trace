@@ -66,7 +66,7 @@ function parseAddresses( addrs: string[] ): ProxyTrace
 		intermediateProxies: [ ]
 	};
 
-	const peer = addrs.shift( );
+	const peer = addrs.pop( );
 	const proxy = addrs.length ? addrs.shift( ) : null;
 	const intermediateProxies = addrs;
 
