@@ -4,6 +4,8 @@
 
 # proxy-trace
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/grantila/proxy-trace.svg)](https://greenkeeper.io/)
+
 This package acts as a frontend to [`proxy-addr`](https://www.npmjs.com/package/proxy-addr). It can be used with custom remote address and header objects, or with Node.js' `req` (for HTTP/1) and the HTTP/2 `stream`.
 
 Since it's based on `proxy-addr`, it uses the same options.
