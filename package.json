@@ -28,16 +28,16 @@
   ],
   "devDependencies": {
     "@types/mocha": "2.x",
-    "@types/node": "8.x",
+    "@types/node": "^9.4.6",
     "chai": "4.x",
-    "coveralls": "2.x",
+    "coveralls": "^3.0.0",
     "istanbul": "1.1.0-alpha.1",
-    "mocha": "4.x",
+    "mocha": "^5.0.1",
     "rimraf": "2.x",
-    "typescript": "2.6.x"
+    "typescript": "~2.7.2"
   },
   "optionalDependencies": {
-    "@types/node": "8.x"
+    "@types/node": "^9.4.6"
   },
   "dependencies": {
     "proxy-addr": "2.x"
