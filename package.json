@@ -1,6 +1,6 @@
 {
   "name": "proxy-trace",
-  "version": "0.1.1",
+  "version": "0.0.0-development",
   "description": "Typesafe transportation-agnostic proxy parser",
   "author": "Gustaf Räntilä",
   "license": "MIT",
@@ -13,11 +13,14 @@
   "scripts": {
     "build": "./node_modules/.bin/rimraf dist && ./node_modules/.bin/tsc -p .",
     "test": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha --build --check-leaks -- dist/test",
-    "buildtest": "npm run build && npm run test"
+    "buildtest": "npm run build && npm run test",
+    "travis-deploy-once": "travis-deploy-once",
+    "semantic-release": "semantic-release",
+    "cz": "git-cz"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/grantila/proxy-trace.git"
+    "url": "https://github.com/grantila/proxy-trace.git"
   },
   "keywords": [
     "address",
@@ -31,9 +34,12 @@
     "@types/node": "8.x",
     "chai": "4.x",
     "coveralls": "2.x",
+    "cz-conventional-changelog": "^2.1.0",
     "istanbul": "1.1.0-alpha.1",
     "mocha": "4.x",
     "rimraf": "2.x",
+    "semantic-release": "^15.12.3",
+    "travis-deploy-once": "^5.0.9",
     "typescript": "2.6.x"
   },
   "optionalDependencies": {
@@ -41,5 +47,10 @@
   },
   "dependencies": {
     "proxy-addr": "2.x"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
