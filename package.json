@@ -12,8 +12,10 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "./node_modules/.bin/rimraf dist && ./node_modules/.bin/tsc -p .",
-    "test": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha --build --check-leaks -- dist/test",
+    "mocha": "node_modules/.bin/mocha --bail --check-leaks dist/test",
+    "test": "node_modules/.bin/nyc npm run mocha",
     "buildtest": "npm run build && npm run test",
+    "coverage": "node_modules/.bin/nyc report --reporter=html",
     "travis-deploy-once": "travis-deploy-once",
     "semantic-release": "semantic-release",
     "cz": "git-cz"
@@ -30,20 +32,20 @@
     "ip"
   ],
   "devDependencies": {
-    "@types/mocha": "2.x",
-    "@types/node": "8.x",
+    "@types/mocha": "5.x",
+    "@types/node": "10.x",
     "chai": "4.x",
-    "coveralls": "2.x",
-    "cz-conventional-changelog": "^2.1.0",
-    "istanbul": "1.1.0-alpha.1",
-    "mocha": "4.x",
+    "coveralls": "3.x",
+    "cz-conventional-changelog": "2.x",
+    "nyc": "13",
+    "mocha": "5.x",
     "rimraf": "2.x",
-    "semantic-release": "^15.12.3",
-    "travis-deploy-once": "^5.0.9",
-    "typescript": "2.6.x"
+    "semantic-release": "15.x",
+    "travis-deploy-once": "5.x",
+    "typescript": "3.x"
   },
-  "optionalDependencies": {
-    "@types/node": "8.x"
+  "peerDependencies": {
+    "@types/node": "10.x"
   },
   "dependencies": {
     "proxy-addr": "2.x"
