@@ -1,9 +1,7 @@
-'use strict'
+import type { IncomingMessage } from 'node:http'
+import type { Http2Stream, IncomingHttpHeaders } from 'node:http2'
 
 import { all as allProxies, compile as compileTrust } from 'proxy-addr'
-
-import { IncomingMessage } from 'http'
-import { Http2Stream, IncomingHttpHeaders } from 'http2'
 
 
 export type TrustFunction = ( addr: string, index: number ) => boolean;
@@ -13,8 +11,6 @@ export interface ProxyOptions
 {
 	trust: TrustOption;
 }
-
-const defaultOptions: ProxyOptions = Object.freeze( { trust: null } );
 
 export interface ProxyTrace
 {
@@ -28,7 +24,7 @@ function trueFunction( )
 	return true;
 }
 
-function trustFunctionMaker( trust: TrustOption ): TrustFunction
+function trustFunctionMaker( trust: TrustOption | undefined ): TrustFunction
 {
 	const userTrust: TrustFunction =
 		typeof trust === 'function'
@@ -40,8 +36,10 @@ function trustFunctionMaker( trust: TrustOption ): TrustFunction
 }
 
 function makeReqFromValues( remoteAddress: string, xForwardedFor?: string )
+: IncomingMessage
 {
-	return !!xForwardedFor
+	return (
+		!!xForwardedFor
 		? {
 			headers: { 'x-forwarded-for': xForwardedFor },
 			connection: { remoteAddress },
@@ -49,25 +47,23 @@ function makeReqFromValues( remoteAddress: string, xForwardedFor?: string )
 		: {
 			headers: { },
 			connection: { remoteAddress },
-		};
+		}
+	) as IncomingMessage;
 }
 
 function makeReqFromStream( stream: Http2Stream, headers: IncomingHttpHeaders )
+: IncomingMessage
 {
 	return {
 		headers,
 		connection: { remoteAddress: stream.session.socket.remoteAddress },
-	};
+	} as IncomingMessage;
 }
 
 function parseAddresses( addrs: string[] ): ProxyTrace
 {
-	const address: ProxyTrace = {
-		intermediateProxies: [ ]
-	};
-
 	const peer = addrs.pop( );
-	const proxy = addrs.length ? addrs.shift( ) : null;
+	const proxy = addrs.length ? addrs.shift( ) : undefined;
 	const intermediateProxies = addrs;
 
 	return { peer, proxy, intermediateProxies };

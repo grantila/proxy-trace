@@ -1,5 +1,6 @@
 [![npm version][npm-image]][npm-url]
-[![build status][travis-image]][travis-url]
+[![downloads][downloads-image]][npm-url]
+[![build status][build-image]][build-url]
 [![coverage status][coverage-image]][coverage-url]
 
 # proxy-trace
@@ -10,6 +11,10 @@ Since it's based on `proxy-addr`, it uses the same options.
 
 Its purpose is to provide access to the address of the remote peer, and understands proxies' `X-Forwarded-For` header to distinguish the proxy addresses from the end-user address.
 
+
+## Versions
+
+ * Since v2 this is a [pure ESM][pure-esm] package, and requires Node.js 16
 
 ## Exported function
 
@@ -50,7 +55,7 @@ import { trace } from 'proxy-trace'
 const tracer = trace( { trust: "127.0.0.1" } );
 
 const {
-    proxy, // string (or null)
+    proxy, // string (or undefiend)
     intermediateProxies, // string[]
     peer, // string (or null)
 } = tracer( remoteAddress, xForwardedFor );
@@ -64,7 +69,7 @@ import { traceReq } from 'proxy-trace'
 const tracer = traceReq( { trust: "127.0.0.1" } );
 
 const {
-    proxy, // string (or null)
+    proxy, // string (or undefiend)
     intermediateProxies, // string[]
     peer, // string (or null)
 } = tracer( req );
@@ -78,7 +83,7 @@ import { traceStream } from 'proxy-trace'
 const tracer = traceStream( { trust: "127.0.0.1" } );
 
 const {
-    proxy, // string (or null)
+    proxy, // string (or undefiend)
     intermediateProxies, // string[]
     peer, // string (or null)
 } = tracer( stream, headers );
@@ -87,7 +92,9 @@ const {
 
 [npm-image]: https://img.shields.io/npm/v/proxy-trace.svg
 [npm-url]: https://npmjs.org/package/proxy-trace
-[travis-image]: https://img.shields.io/travis/grantila/proxy-trace.svg
-[travis-url]: https://travis-ci.org/grantila/proxy-trace
+[downloads-image]: https://img.shields.io/npm/dm/proxy-trace.svg
+[build-image]: https://img.shields.io/github/actions/workflow/status/grantila/proxy-trace/master.yml?branch=master
+[build-url]: https://github.com/grantila/proxy-trace/actions?query=workflow%3AMaster
 [coverage-image]: https://coveralls.io/repos/github/grantila/proxy-trace/badge.svg?branch=master
 [coverage-url]: https://coveralls.io/github/grantila/proxy-trace?branch=master
+[pure-esm]: https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c

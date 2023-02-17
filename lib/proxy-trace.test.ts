@@ -1,7 +1,5 @@
-'use strict';
-
-import 'mocha';
-import { expect } from 'chai';
+import type { IncomingMessage } from 'node:http'
+import type { Http2Stream, IncomingHttpHeaders } from 'node:http2'
 
 import {
 	trace,
@@ -9,10 +7,7 @@ import {
 	traceStream,
 	TraceStreamFunction,
 	ProxyTrace,
-} from '../../';
-
-import { IncomingMessage } from 'http'
-import { Http2Stream, IncomingHttpHeaders } from 'http2'
+} from './proxy-trace.js'
 
 function makeProxyAddr( addrs: ReadonlyArray< string > )
 {
@@ -58,9 +53,9 @@ describe( 'trace', ( ) =>
 		const peer = "1.2.3.4";
 		const tracer = trace( );
 		const res = tracer( peer );
-		expect( res.peer ).to.equal( peer );
-		expect( res.proxy ).to.be.null;
-		expect( res.intermediateProxies ).to.be.empty;
+		expect( res.peer ).toBe( peer );
+		expect( res.proxy ).toBe( undefined );
+		expect( res.intermediateProxies ).toHaveLength( 0 );
 	} );
 
 	it( 'should get peer and proxy when one proxy', ( ) =>
@@ -69,9 +64,9 @@ describe( 'trace', ( ) =>
 		const proxies = [ "2.2.2.2" ];
 		const tracer = trace( );
 		const res = tracer( peer, makeProxyAddr( proxies ) );
-		expect( res.peer ).to.equal( proxies[ 0 ] );
-		expect( res.proxy ).to.equal( peer );
-		expect( res.intermediateProxies ).to.be.empty;
+		expect( res.peer ).toBe( proxies[ 0 ] );
+		expect( res.proxy ).toBe( peer );
+		expect( res.intermediateProxies ).toHaveLength( 0 );
 	} );
 
 	it( 'should get peer and proxies when two proxies', ( ) =>
@@ -80,9 +75,9 @@ describe( 'trace', ( ) =>
 		const proxies = [ "2.2.2.2", "3.3.3.3" ];
 		const tracer = trace( );
 		const res = tracer( peer, makeProxyAddr( proxies ) );
-		expect( res.peer ).to.equal( proxies[ 0 ] );
-		expect( res.proxy ).to.equal( peer );
-		expect( res.intermediateProxies ).to.deep.equal( proxies.slice( 1 ) );
+		expect( res.peer ).toBe( proxies[ 0 ] );
+		expect( res.proxy ).toBe( peer );
+		expect( res.intermediateProxies ).toStrictEqual( proxies.slice( 1 ) );
 	} );
 
 	it( 'should get peer and proxies when three proxies', ( ) =>
@@ -91,10 +86,10 @@ describe( 'trace', ( ) =>
 		const proxies = [ "2.2.2.2", "3.3.3.3", "4.4.4.4" ];
 		const tracer = trace( );
 		const res = tracer( peer, makeProxyAddr( proxies ) );
-		expect( res.peer ).to.equal( proxies[ 0 ] );
-		expect( res.proxy ).to.equal( peer );
+		expect( res.peer ).toBe( proxies[ 0 ] );
+		expect( res.proxy ).toBe( peer );
 		expect( res.intermediateProxies )
-			.to.deep.equal( proxies.slice( 1 ).reverse( ) );
+			.toStrictEqual( proxies.slice( 1 ).reverse( ) );
 	} );
 
 	it( 'should handle function-based trust setting', ( ) =>
@@ -103,10 +98,10 @@ describe( 'trace', ( ) =>
 		const proxies = [ "2.2.2.2", "3.3.3.3", "4.4.4.4" ];
 		const tracer = trace( { trust: ( ) => true } );
 		const res = tracer( peer, makeProxyAddr( proxies ) );
-		expect( res.peer ).to.equal( proxies[ 0 ] );
-		expect( res.proxy ).to.equal( peer );
+		expect( res.peer ).toBe( proxies[ 0 ] );
+		expect( res.proxy ).toBe( peer );
 		expect( res.intermediateProxies )
-			.to.deep.equal( proxies.slice( 1 ).reverse( ) );
+			.toStrictEqual( proxies.slice( 1 ).reverse( ) );
 	} );
 
 	it( 'should handle string-array-based trust setting', ( ) =>
@@ -117,10 +112,10 @@ describe( 'trace', ( ) =>
 			trust: [ "1.2.3.4", "2.2.2.2/8", "4.4.4.4/8" ]
 		} );
 		const res = tracer( peer, makeProxyAddr( proxies ) );
-		expect( res.peer ).to.equal( "3.3.3.3" );
-		expect( res.proxy ).to.equal( peer );
+		expect( res.peer ).toBe( "3.3.3.3" );
+		expect( res.proxy ).toBe( peer );
 		expect( res.intermediateProxies )
-			.to.deep.equal( proxies.slice( 2 ) );
+			.toStrictEqual( proxies.slice( 2 ) );
 	} );
 
 	it( 'should handle IPv6', ( ) =>
@@ -129,10 +124,10 @@ describe( 'trace', ( ) =>
 		const proxies = [ "2.2.2.2", "[2001:db2:cafe::17]", "4.4.4.4" ];
 		const tracer = trace( );
 		const res = tracer( peer, makeProxyAddr( proxies ) );
-		expect( res.peer ).to.equal( proxies[ 0 ] );
-		expect( res.proxy ).to.equal( peer );
+		expect( res.peer ).toBe( proxies[ 0 ] );
+		expect( res.proxy ).toBe( peer );
 		expect( res.intermediateProxies )
-			.to.deep.equal( proxies.slice( 1 ).reverse( ) );
+			.toStrictEqual( proxies.slice( 1 ).reverse( ) );
 	} );
 } );
 
@@ -143,9 +138,9 @@ describe( 'traceReq', ( ) =>
 		const peer = "1.2.3.4";
 		const tracer = traceReq( );
 		const res = tracer( makeReq( peer ) );
-		expect( res.peer ).to.equal( peer );
-		expect( res.proxy ).to.be.null;
-		expect( res.intermediateProxies ).to.be.empty;
+		expect( res.peer ).toBe( peer );
+		expect( res.proxy ).toBe( undefined );
+		expect( res.intermediateProxies ).toHaveLength( 0 );
 	} );
 
 	it( 'should get peer and proxy when one proxy', ( ) =>
@@ -154,9 +149,9 @@ describe( 'traceReq', ( ) =>
 		const proxies = [ "2.2.2.2" ];
 		const tracer = traceReq( );
 		const res = tracer( makeReq( peer, makeProxyAddr( proxies ) ) );
-		expect( res.peer ).to.equal( proxies[ 0 ] );
-		expect( res.proxy ).to.equal( peer );
-		expect( res.intermediateProxies ).to.be.empty;
+		expect( res.peer ).toBe( proxies[ 0 ] );
+		expect( res.proxy ).toBe( peer );
+		expect( res.intermediateProxies ).toHaveLength( 0 );
 	} );
 
 	it( 'should get peer and proxies when two proxies', ( ) =>
@@ -165,9 +160,9 @@ describe( 'traceReq', ( ) =>
 		const proxies = [ "2.2.2.2", "3.3.3.3" ];
 		const tracer = traceReq( );
 		const res = tracer( makeReq( peer, makeProxyAddr( proxies ) ) );
-		expect( res.peer ).to.equal( proxies[ 0 ] );
-		expect( res.proxy ).to.equal( peer );
-		expect( res.intermediateProxies ).to.deep.equal( proxies.slice( 1 ) );
+		expect( res.peer ).toBe( proxies[ 0 ] );
+		expect( res.proxy ).toBe( peer );
+		expect( res.intermediateProxies ).toStrictEqual( proxies.slice( 1 ) );
 	} );
 
 	it( 'should get peer and proxies when three proxies', ( ) =>
@@ -176,10 +171,10 @@ describe( 'traceReq', ( ) =>
 		const proxies = [ "2.2.2.2", "3.3.3.3", "4.4.4.4" ];
 		const tracer = traceReq( );
 		const res = tracer( makeReq( peer, makeProxyAddr( proxies ) ) );
-		expect( res.peer ).to.equal( proxies[ 0 ] );
-		expect( res.proxy ).to.equal( peer );
+		expect( res.peer ).toBe( proxies[ 0 ] );
+		expect( res.proxy ).toBe( peer );
 		expect( res.intermediateProxies )
-			.to.deep.equal( proxies.slice( 1 ).reverse( ) );
+			.toStrictEqual( proxies.slice( 1 ).reverse( ) );
 	} );
 } );
 
@@ -190,9 +185,9 @@ describe( 'traceStream', ( ) =>
 		const peer = "1.2.3.4";
 		const tracer = traceStream( );
 		const res = makeStream( tracer, peer );
-		expect( res.peer ).to.equal( peer );
-		expect( res.proxy ).to.be.null;
-		expect( res.intermediateProxies ).to.be.empty;
+		expect( res.peer ).toBe( peer );
+		expect( res.proxy ).toBe( undefined );
+		expect( res.intermediateProxies ).toHaveLength( 0 );
 	} );
 
 	it( 'should get peer and proxy when one proxy', ( ) =>
@@ -201,9 +196,9 @@ describe( 'traceStream', ( ) =>
 		const proxies = [ "2.2.2.2" ];
 		const tracer = traceStream( );
 		const res = makeStream( tracer, peer, makeProxyAddr( proxies ) );
-		expect( res.peer ).to.equal( proxies[ 0 ] );
-		expect( res.proxy ).to.equal( peer );
-		expect( res.intermediateProxies ).to.be.empty;
+		expect( res.peer ).toBe( proxies[ 0 ] );
+		expect( res.proxy ).toBe( peer );
+		expect( res.intermediateProxies ).toHaveLength( 0 );
 	} );
 
 	it( 'should get peer and proxies when two proxies', ( ) =>
@@ -212,9 +207,9 @@ describe( 'traceStream', ( ) =>
 		const proxies = [ "2.2.2.2", "3.3.3.3" ];
 		const tracer = traceStream( );
 		const res = makeStream( tracer, peer, makeProxyAddr( proxies ) );
-		expect( res.peer ).to.equal( proxies[ 0 ] );
-		expect( res.proxy ).to.equal( peer );
-		expect( res.intermediateProxies ).to.deep.equal( proxies.slice( 1 ) );
+		expect( res.peer ).toBe( proxies[ 0 ] );
+		expect( res.proxy ).toBe( peer );
+		expect( res.intermediateProxies ).toStrictEqual( proxies.slice( 1 ) );
 	} );
 
 	it( 'should get peer and proxies when three proxies', ( ) =>
@@ -223,9 +218,9 @@ describe( 'traceStream', ( ) =>
 		const proxies = [ "2.2.2.2", "3.3.3.3", "4.4.4.4" ];
 		const tracer = traceStream( );
 		const res = makeStream( tracer, peer, makeProxyAddr( proxies ) );
-		expect( res.peer ).to.equal( proxies[ 0 ] );
-		expect( res.proxy ).to.equal( peer );
+		expect( res.peer ).toBe( proxies[ 0 ] );
+		expect( res.proxy ).toBe( peer );
 		expect( res.intermediateProxies )
-			.to.deep.equal( proxies.slice( 1 ).reverse( ) );
+			.toStrictEqual( proxies.slice( 1 ).reverse( ) );
 	} );
 } );
