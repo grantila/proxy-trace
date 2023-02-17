@@ -1,11 +1,11 @@
 {
 	"compilerOptions": {
 		"declaration": true,
-		"lib": [ "es2015", "es2017" ],
+		"lib": [ "ES2020" ],
 		"outDir": "dist",
 		"sourceMap": true,
-		"module": "CommonJS",
-		"target": "esnext"
+		"module": "ES2020",
+		"target": "ES2020"
 	},
 	"include": [
 		"index.ts",
